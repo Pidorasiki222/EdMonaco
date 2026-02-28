@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        html, body {
+            margin: 0; padding: 0; width: 100%; height: 100%;
+            overflow: hidden; background-color: black;
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
+        /* Полоса вкладок */
+        #tabs-bar {
+            display: flex;
+            background-color: black; 
+            height: 32px; 
+            align-items: center;
+            padding: 0 10px;
+            gap: 6px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+        }
+
+        /* АНИМАЦИЯ ПОЯВЛЕНИЯ ВКЛАДКИ */
+        @keyframes tabSpawn {
+            from { opacity: 0; transform: translateX(-10px) scale(0.95); }
+            to { opacity: 1; transform: translateX(0) scale(1); }
+        }
+
+        .tab {
+            display: flex;
+            align-items: center;
+            background-color: rgb(15, 15, 15);
+            color: #777;
+            padding: 0 10px;
+            height: 24px; 
+            min-width: 80px;
+            max-width: 120px;
+            font-size: 11px; 
+            border-radius: 6px; 
+            cursor: pointer;
+            user-select: none;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); /* Мягкий переход */
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            animation: tabSpawn 0.3s ease-out;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .tab:hover {
+            background-color: rgb(25, 25, 25);
+            color: #bbb;
+        }
+
+        .tab.active {
+            background-color: rgb(30, 30, 30);
+            color: #fff;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+
+        /* Индикатор активной вкладки (тонкая полоска внизу) */
+        .tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 40%;
+            height: 2px;
+            background: #515ada; /* Цвет акцента */
+            border-radius: 2px;
+        }
+
+        .tab-name {
+            flex-grow: 1;
+            outline: none;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            text-align: center;
+            margin-right: 4px;
+        }
+
+        .close-btn {
+            font-size: 14px;
+            color: white; 
+            opacity: 0.3;
+            transition: 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 16px;
+            height: 16px;
+            border-radius: 4px;
+        }
+
+        .close-btn:hover {
+            opacity: 1;
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        /* Кнопка добавить (+) */
+        #add-tab-btn {
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: rgb(15, 15, 15);
+            color: #aaa;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.2s;
+        }
+
+        #add-tab-btn:hover {
+            background-color: rgb(40, 40, 40);
+            color: white;
+            transform: rotate(90deg); /* Крутая фишка при наведении */
+        }
+
+        /* Контейнер редактора */
+        #editor-container {
+            width: calc(100% - 12px);
+            height: calc(100% - 46px);
+            margin: 4px 6px 6px 6px;
+            border-radius: 8px;
+            overflow: hidden;
+            background-color: rgb(10, 10, 10);
+            opacity: 0;
+            transform: translateY(10px);
+            animation: editorFadeIn 0.6s ease-out forwards;
+            animation-delay: 0.2s;
+        }
+
+        @keyframes editorFadeIn {
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Кастомный скроллбар для Monaco */
+        .monaco-scrollable-element .scrollbar {
+            transition: opacity 0.3s;
+        }
+    </style>
+</head>
+<body>
+    <div id="tabs-bar">
+        <div id="tabs-list" style="display: flex; gap: 6px;"></div>
+        <div id="add-tab-btn" onclick="addNewTab()">+</div>
+    </div>
+    <div id="editor-container"></div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.26.1/min/vs/loader.min.js"></script>
+    <script>
+        let editor;
+        let tabs = [];
+        let activeTabId = null;
+        let tabCounter = 0;
+
+        require.config({ paths: { 'vs': 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.26.1/min/vs' } });
+
+        require(['vs/editor/editor.main'], function () {
+            monaco.editor.defineTheme('trx-theme', {
+                base: 'vs-dark',
+                inherit: true,
+                rules: [],
+                colors: {
+                    'editor.background': '#0A0A0A',
+                    'editorLineNumber.foreground': '#333',
+                    'editor.lineHighlightBackground': '#151515',
+                }
+            });
+
+            editor = monaco.editor.create(document.getElementById('editor-container'), {
+                value: '-- TRX Engine\nprint("Hello World")',
+                language: 'lua',
+                theme: 'trx-theme',
+                automaticLayout: true,
+                fontFamily: 'Consolas, monospace',
+                fontSize: 13,
+                minimap: { enabled: false },
+                smoothScrolling: true, /* Плавный скролл */
+                cursorSmoothCaretAnimation: true, /* Плавная каретка */
+                cursorBlinking: "expand",
+                renderLineHighlight: "all",
+                scrollbar: { verticalScrollbarSize: 8, horizontalScrollbarSize: 8 }
+            });
+
+            addNewTab();
+        });
+
+        function addNewTab() {
+            tabCounter++;
+            const id = "tab_" + Date.now();
+            const name = "script" + tabCounter + ".lua";
+            tabs.push({ id: id, name: name, content: "-- " + name + "\n" });
+            renderTabs();
+            switchTab(id);
+        }
+
+        function switchTab(id) {
+            if (activeTabId) {
+                const current = tabs.find(t => t.id === activeTabId);
+                if (current) current.content = editor.getValue();
+            }
+            activeTabId = id;
+            const target = tabs.find(t => t.id === id);
+            
+            // Небольшой эффект "вспышки" при переключении (опционально)
+            document.getElementById('editor-container').style.opacity = '0.7';
+            setTimeout(() => {
+                editor.setValue(target.content);
+                document.getElementById('editor-container').style.opacity = '1';
+            }, 50);
+
+            renderTabs();
+        }
+
+        function closeTab(e, id) {
+            e.stopPropagation();
+            if (tabs.length === 1) return;
+            
+            // Находим элемент, чтобы добавить анимацию удаления
+            const tabEl = e.target.parentElement;
+            tabEl.style.transform = "scale(0.8)";
+            tabEl.style.opacity = "0";
+
+            setTimeout(() => {
+                tabs = tabs.filter(t => t.id !== id);
+                if (activeTabId === id) switchTab(tabs[tabs.length - 1].id);
+                else renderTabs();
+            }, 200);
+        }
+
+        function renameTab(id, element) {
+            element.contentEditable = true;
+            element.focus();
+            const save = () => {
+                element.contentEditable = false;
+                const tab = tabs.find(t => t.id === id);
+                if (tab) tab.name = element.innerText;
+            };
+            element.onkeydown = (e) => { if(e.key === "Enter") { e.preventDefault(); save(); } };
+            element.onblur = save;
+        }
+
+        function renderTabs() {
+            const list = document.getElementById('tabs-list');
+            list.innerHTML = '';
+            tabs.forEach(tab => {
+                const div = document.createElement('div');
+                div.className = `tab ${tab.id === activeTabId ? 'active' : ''}`;
+                div.onclick = () => switchTab(tab.id);
+                div.innerHTML = `
+                    <span class="tab-name" ondblclick="renameTab('${tab.id}', this)">${tab.name}</span>
+                    <span class="close-btn" onclick="closeTab(event, '${tab.id}')">×</span>
+                `;
+                list.appendChild(div);
+            });
+        }
+    </script>
+</body>
+</html>
