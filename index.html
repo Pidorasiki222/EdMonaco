@@ -2,95 +2,73 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
         :root {
             --bg-dark: #0d0d0f;
-            --bg-lighter: #16161a;
+            --bg-lighter: #1a1a1e;
+            --tab-active: #252529;
+            --text-main: #efeff1;
+            --text-dim: #94949e;
             --accent: #515ada;
-            --accent-glow: rgba(81, 90, 218, 0.3);
-            --text-main: #e0e0e0;
-            --text-dim: #71717a;
-            --border: rgba(255, 255, 255, 0.08);
-            --tab-active: #1e1e22;
+            --danger: #ff4d4d;
+            --border: rgba(255, 255, 255, 0.1);
         }
 
         html, body {
             margin: 0; padding: 0; width: 100%; height: 100%;
             overflow: hidden; background-color: var(--bg-dark);
-            font-family: 'Inter', 'Segoe UI', Roboto, sans-serif;
-            color: var(--text-main);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
         }
 
-        /* Полоса вкладок */
+        /* Полоса вкладок — стала чуть выше */
         #tabs-bar {
             display: flex;
             background-color: var(--bg-dark); 
-            height: 40px; 
+            height: 48px; 
             align-items: center;
-            padding: 0 12px;
+            padding: 0 15px;
             gap: 8px;
             border-bottom: 1px solid var(--border);
-            -webkit-app-region: drag; /* Если будешь делать десктопное приложение */
         }
 
         #tabs-list {
             display: flex; 
-            gap: 4px;
-            align-items: center;
+            gap: 8px;
         }
 
-        /* АНИМАЦИЯ */
-        @keyframes tabSpawn {
-            from { opacity: 0; transform: translateY(4px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
+        /* ТАБЫ — теперь «потолще» и солиднее */
         .tab {
             display: flex;
             align-items: center;
-            background-color: transparent;
+            background-color: var(--bg-lighter);
             color: var(--text-dim);
-            padding: 0 12px;
-            height: 28px; 
-            min-width: 90px;
-            max-width: 160px;
-            font-size: 12px; 
+            padding: 0 16px;
+            height: 34px; /* Увеличенная высота */
+            min-width: 100px;
+            max-width: 180px;
+            font-size: 13px; 
             font-weight: 500;
-            border-radius: 6px; 
+            border-radius: 8px; 
             cursor: pointer;
             user-select: none;
-            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: background-color 0.2s, color 0.2s, border-color 0.2s;
             border: 1px solid transparent;
-            animation: tabSpawn 0.25s ease-out;
             position: relative;
         }
 
         .tab:hover {
-            background-color: var(--bg-lighter);
+            background-color: #202024;
             color: var(--text-main);
         }
 
         .tab.active {
             background-color: var(--tab-active);
             color: #fff;
-            border: 1px solid var(--border);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.4);
         }
 
-        /* Индикатор активной вкладки */
-        .tab.active::after {
-            content: '';
-            position: absolute;
-            bottom: -5px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 20px;
-            height: 2px;
-            background: var(--accent);
-            box-shadow: 0 0 8px var(--accent);
-            border-radius: 2px;
-        }
+        /* Убрана полоска снизу (::after удален) */
 
         .tab-name {
             flex-grow: 1;
@@ -98,65 +76,58 @@
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
-            margin-right: 8px;
+            margin-right: 10px;
         }
 
+        /* КНОПКА ЗАКРЫТИЯ — теперь просто краснеет */
         .close-btn {
-            font-size: 16px;
-            opacity: 0.5;
-            transition: 0.2s;
-            width: 18px;
-            height: 18px;
+            font-size: 18px;
+            color: var(--text-dim);
+            transition: color 0.2s; /* Плавная смена цвета */
             display: flex;
             align-items: center;
             justify-content: center;
-            border-radius: 4px;
+            width: 20px;
+            height: 20px;
+            line-height: 1;
         }
 
         .close-btn:hover {
-            opacity: 1;
-            background-color: rgba(255, 255, 255, 0.1);
-            color: #ff5f56;
+            color: var(--danger) !important; /* Цвет становится красным */
+            background: none; /* Убрал фон при наведении */
+            transform: none; /* Убрал анимацию движения */
         }
 
         /* Кнопка добавить (+) */
         #add-tab-btn {
-            width: 28px;
-            height: 28px;
+            width: 32px;
+            height: 32px;
             display: flex;
             align-items: center;
             justify-content: center;
+            background-color: var(--bg-lighter);
             color: var(--text-dim);
-            border-radius: 6px;
+            border-radius: 8px;
             cursor: pointer;
-            font-size: 18px;
+            font-size: 20px;
+            border: 1px solid var(--border);
             transition: all 0.2s;
-            border: 1px solid transparent;
         }
 
         #add-tab-btn:hover {
-            background-color: var(--bg-lighter);
-            color: var(--accent);
-            border-color: var(--border);
-            transform: scale(1.05);
+            background-color: var(--tab-active);
+            color: white;
+            border-color: var(--accent);
         }
 
-        /* Контейнер редактора */
         #editor-container {
-            width: calc(100% - 20px);
-            height: calc(100% - 60px);
-            margin: 10px;
+            width: calc(100% - 24px);
+            height: calc(100% - 72px);
+            margin: 12px;
             border-radius: 12px;
             overflow: hidden;
-            background-color: var(--bg-dark);
+            background-color: #08080a;
             border: 1px solid var(--border);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            transition: opacity 0.3s ease;
-        }
-
-        /* Скроллбары для Monaco */
-        .monaco-editor .scrollbar.vertical {
-            width: 10px !important;
         }
     </style>
 </head>
@@ -180,40 +151,22 @@
             monaco.editor.defineTheme('trx-theme', {
                 base: 'vs-dark',
                 inherit: true,
-                rules: [
-                    { token: 'comment', foreground: '6272a4', fontStyle: 'italic' },
-                    { token: 'keyword', foreground: 'ff79c6' },
-                    { token: 'string', foreground: 'f1fa8c' }
-                ],
+                rules: [],
                 colors: {
-                    'editor.background': '#0d0d0f',
-                    'editorLineNumber.foreground': '#454545',
-                    'editorLineNumber.activeForeground': '#888',
-                    'editor.lineHighlightBackground': '#1a1a1e',
-                    'editorCursor.foreground': '#515ada',
-                    'editor.selectionBackground': '#515ada33',
+                    'editor.background': '#08080a',
+                    'editor.lineHighlightBackground': '#151518',
                 }
             });
 
             editor = monaco.editor.create(document.getElementById('editor-container'), {
-                value: '-- TRX Engine v2\nprint("Design Updated")',
+                value: '-- TRX Engine\nprint("Tabs improved")',
                 language: 'lua',
                 theme: 'trx-theme',
                 automaticLayout: true,
-                fontFamily: "'Fira Code', 'Cascadia Code', Consolas, monospace",
                 fontSize: 14,
-                fontLigatures: true,
-                minimap: { enabled: true, scale: 0.75 },
-                padding: { top: 16 },
-                smoothScrolling: true,
-                cursorSmoothCaretAnimation: true,
-                cursorBlinking: "phase",
-                renderLineHighlight: "all",
-                scrollbar: {
-                    verticalScrollbarSize: 10,
-                    horizontalScrollbarSize: 10,
-                    useShadows: false
-                }
+                minimap: { enabled: false },
+                cursorBlinking: "smooth",
+                scrollbar: { verticalScrollbarSize: 8, horizontalScrollbarSize: 8 }
             });
 
             addNewTab();
@@ -230,67 +183,37 @@
 
         function switchTab(id) {
             if (activeTabId === id) return;
-
             if (activeTabId) {
                 const current = tabs.find(t => t.id === activeTabId);
                 if (current) current.content = editor.getValue();
             }
-
             activeTabId = id;
             const target = tabs.find(t => t.id === id);
-            
-            const container = document.getElementById('editor-container');
-            container.style.opacity = '0.5';
-            
-            setTimeout(() => {
-                editor.setValue(target.content);
-                container.style.opacity = '1';
-                renderTabs();
-            }, 60);
+            editor.setValue(target.content);
+            renderTabs();
         }
 
         function closeTab(e, id) {
             e.stopPropagation();
             if (tabs.length === 1) return;
             
-            const tabEl = e.target.parentElement;
-            tabEl.style.transform = "translateY(-10px)";
-            tabEl.style.opacity = "0";
-
-            setTimeout(() => {
-                tabs = tabs.filter(t => t.id !== id);
-                if (activeTabId === id) {
-                    switchTab(tabs[tabs.length - 1].id);
-                } else {
-                    renderTabs();
-                }
-            }, 150);
+            tabs = tabs.filter(t => t.id !== id);
+            if (activeTabId === id) {
+                switchTab(tabs[tabs.length - 1].id);
+            } else {
+                renderTabs();
+            }
         }
 
         function renameTab(id, element) {
             element.contentEditable = true;
             element.focus();
-            
-            // Выделяем текст при начале редактирования
-            const range = document.createRange();
-            range.selectNodeContents(element);
-            const sel = window.getSelection();
-            sel.removeAllRanges();
-            sel.addRange(range);
-
             const save = () => {
                 element.contentEditable = false;
                 const tab = tabs.find(t => t.id === id);
-                if (tab) tab.name = element.innerText.trim() || "unnamed.lua";
-                renderTabs();
+                if (tab) tab.name = element.innerText;
             };
-
-            element.onkeydown = (e) => { 
-                if(e.key === "Enter") { 
-                    e.preventDefault(); 
-                    save(); 
-                } 
-            };
+            element.onkeydown = (e) => { if(e.key === "Enter") { e.preventDefault(); save(); } };
             element.onblur = save;
         }
 
