@@ -1,1035 +1,1019 @@
 <!DOCTYPE html>
-<html lang="en">
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        :root {
-            --bg-color: #00000000;
-            --accent-color: #ffff;
-            --accent-glow: rgba(0, 160, 0, 0.4);
-            --card-bg: rgba(0, 80, 0, 0.7);
-            --text-color: rgba(200, 200, 200, 0.92);
-            --text-secondary: rgba(255, 255, 255, 0.7);
-            --border: rgba(255, 255, 255, 0.15);
-            --success: #4CAF50;
-            --danger: #f44336;
-            --radius-sm: 6px;
-            --radius-md: 8px;
-            --radius-lg: 12px;
-            --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Poppins', monospace;
-            transition: var(--transition);
-        }
-
-        body {
-            color: var(--text-color);
-            min-height: 100vh;
-            padding: 15px;
-            overflow-x: hidden;
-            line-height: 1.5;
-            background: var(--bg-color);
-        }
-
-        ::-webkit-scrollbar {
-            width: 8px;
-            background: transparent;
-        }
-        
-        ::-webkit-scrollbar-thumb {
-            background: rgba(0, 255, 0, 0.3);
-            border-radius: 4px;
-        }
-        
-        ::-webkit-scrollbar-thumb:hover {
-            background: rgba(0, 255, 0, 0.6);
-        }
-
-        .floating-search {
-            position: sticky;
-            top: 15px;
-            z-index: 100;
-            margin-bottom: 15px;
-            background: rgba(20, 20, 20, 0.8);
-            border-radius: var(--radius-lg);
-            backdrop-filter: blur(12px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
-            border: 1px solid var(--border);
-            padding: 10px;
-            display: flex;
-            gap: 8px;
-            align-items: center;
-            background: linear-gradient(to right, rgba(30, 30, 30, 0.8), rgba(20, 20, 20, 0.9));
-            border-image: linear-gradient(to right, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.05)) 1;
-        }
-
-        .search-input {
-            flex: 1;
-            padding: 8px 12px;
-            border: 1px solid var(--border);
-            background: rgba(30, 30, 30, 0.6);
-            color: var(--text-color);
-            border-radius: var(--radius-md);
-            font-size: 0.9rem;
-            outline: none;
-            background: linear-gradient(to right, rgba(25, 25, 25, 0.7), rgba(20, 20, 20, 0.8));
-        }
-
-        .search-input:focus {
-            border-color: var(--accent-color);
-            box-shadow: 0 0 0 2px var(--accent-glow);
-            background: linear-gradient(to right, rgba(35, 35, 35, 0.7), rgba(25, 25, 25, 0.8));
-        }
-
-        .filter-select {
-            padding: 8px 10px;
-            border: 1px solid var(--border);
-            background: rgba(30, 30, 30, 0.6);
-            color: var(--text-color);
-            border-radius: var(--radius-md);
-            font-size: 0.85rem;
-            outline: none;
-            cursor: pointer;
-            background: linear-gradient(to bottom, rgba(25, 25, 25, 0.7), rgba(20, 20, 20, 0.8));
-        }
-
-        .filter-select:focus {
-            border-color: var(--accent-color);
-            box-shadow: 0 0 0 2px var(--accent-glow);
-            background: linear-gradient(to bottom, rgba(35, 35, 35, 0.7), rgba(25, 25, 25, 0.8));
-        }
-
-        .tabs {
-            display: flex;
-            background: rgba(30, 30, 30, 0.6);
-            border-radius: var(--radius-md);
-            padding: 3px;
-            border: 1px solid var(--border);
-            width: fit-content;
-            margin: 0 auto 15px;
-            background: linear-gradient(to right, rgba(25, 25, 25, 0.7), rgba(20, 20, 20, 0.8));
-        }
-
-        .tab {
-            padding: 6px 12px;
-            text-align: center;
-            cursor: pointer;
-            border-radius: var(--radius-sm);
-            font-weight: 600;
-            font-size: 0.8rem;
-            color: var(--text-secondary);
-            transition: all 0.3s ease;
-        }
-
-        .tab:hover {
-            color: var(--text-color);
-            background: rgba(0, 234, 0, 0.3);
-        }
-
-        .tab.active {
-            background: linear-gradient(to right, #00ff33, #20a703);
-            color: white;
-            box-shadow: 0 2px 8px rgba(0, 255, 0, 0.6);
-        }
-
-        .scripts-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 12px;
-            animation: fadeIn 0.8s ease;
-        }
-
-        @media (max-width: 1000px) {
-            .scripts-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
-
-        @media (max-width: 600px) {
-            .scripts-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        .script-card {
-            background: var(--card-bg);
-            border-radius: var(--radius-md);
-            overflow: hidden;
-            border: 1px solid var(--border);
-            opacity: 0;
-            animation: cardEnter 0.5s ease forwards;
-            position: relative;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-            cursor: pointer;
-            backdrop-filter: blur(8px);
-            display: flex;
-            flex-direction: column;
-            height: 100%;
-            background: linear-gradient(to bottom, rgba(25, 25, 25, 0.7), rgba(15, 15, 15, 0.8));
-            border-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05)) 1;
-        }
-
-        @keyframes cardEnter {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .script-card:hover {
-            transform: translateY(-3px);
-            border-color: var(--accent-color);
-            box-shadow: 0 6px 20px rgba(255, 255, 255, 0.15);
-            background: linear-gradient(to bottom, rgba(35, 35, 35, 0.7), rgba(25, 25, 25, 0.8));
-        }
-
-        .script-badge {
-            position: absolute;
-            top: 8px;
-            right: 8px;
-            background: var(--accent-color);
-            color: black;
-            padding: 3px 8px;
-            border-radius: 12px;
-            font-size: 0.7rem;
-            font-weight: 700;
-            z-index: 2;
-            background: linear-gradient(to right, white, #e0e0e0);
-            box-shadow: 0 2px 8px rgba(255, 255, 255, 0.2);
-        }
-
-        .script-image-container {
-            width: 100%;
-            height: 140px;
-            overflow: hidden;
-            position: relative;
-        }
-
-        .script-image-container::before {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            height: 40%;
-            background: linear-gradient(to top, rgba(15, 15, 15, 0.9), transparent);
-            z-index: 1;
-        }
-
-        .script-image {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transition: transform 0.5s ease;
-        }
-
-        .script-card:hover .script-image {
-            transform: scale(1.05);
-        }
-
-        .script-content {
-            padding: 10px;
-            display: flex;
-            flex-direction: column;
-            flex-grow: 1;
-        }
-
-        .script-title {
-            font-size: 0.9rem;
-            font-weight: 600;
-            margin-bottom: 6px;
-            color: var(--text-color);
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .script-info {
-            color: var(--text-secondary);
-            font-size: 0.8rem;
-            margin-bottom: 5px;
-            display: flex;
-            align-items: center;
-            gap: 4px;
-        }
-
-        .script-info i {
-            color: var(--accent-color);
-            width: 12px;
-            text-align: center;
-            font-size: 0.8rem;
-        }
-
-        .script-stats {
-            display: flex;
-            gap: 10px;
-            margin-top: auto;
-            padding-top: 8px;
-            font-size: 0.75rem;
-        }
-
-        .stat-item {
-            display: flex;
-            align-items: center;
-            gap: 3px;
-            color: var(--text-secondary);
-        }
-
-        .stat-item i {
-            color: var(--accent-color);
-            font-size: 0.7rem;
-        }
-
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            z-index: 1000;
-            align-items: center;
-            justify-content: center;
-            backdrop-filter: blur(8px);
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-
-        .modal.active {
-            display: flex;
-            opacity: 1;
-        }
-
-        .modal-content {
-            background: var(--card-bg);
-            border-radius: var(--radius-lg);
-            width: 90%;
-            max-width: 600px;
-            max-height: 80vh;
-            overflow: hidden;
-            transform: translateY(20px);
-            transition: transform 0.3s ease;
-            border: 1px solid var(--accent-color);
-            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
-            background: linear-gradient(to bottom, rgba(25, 25, 25, 0.95), rgba(15, 15, 15, 0.98));
-        }
-
-        .modal.active .modal-content {
-            transform: translateY(0);
-        }
-
-        .modal-header {
-            padding: 10px 15px;
-            border-bottom: 1px solid var(--border);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: linear-gradient(to right, rgba(30, 30, 30, 0.9), rgba(25, 25, 25, 0.95));
-        }
-
-        .modal-title {
-            font-size: 1rem;
-            font-weight: 600;
-            color: var(--accent-color);
-        }
-
-        .modal-close {
-            background: none;
-            border: none;
-            color: var(--text-secondary);
-            font-size: 1.2rem;
-            cursor: pointer;
-        }
-
-        .modal-close:hover {
-            color: var(--accent-color);
-        }
-
-        .modal-body {
-            padding: 15px;
-            overflow-y: auto;
-            max-height: calc(70vh - 80px);
-        }
-
-        .modal-script {
-            background: rgba(20, 20, 20, 0.8);
-            border-radius: var(--radius-sm);
-            padding: 12px;
-            font-family: 'Poppins', monospace;
-            white-space: pre-wrap;
-            word-break: break-all;
-            font-size: 0.8rem;
-            color: var(--text-color);
-            max-height: 250px;
-            overflow-y: auto;
-            margin-bottom: 10px;
-            border: 1px solid var(--border);
-            background: linear-gradient(to bottom, rgba(30, 30, 30, 0.8), rgba(25, 25, 25, 0.9));
-        }
-
-        .modal-footer {
-            padding: 10px 15px;
-            border-top: 1px solid var(--border);
-            display: flex;
-            justify-content: space-between;
-            gap: 8px;
-            background: linear-gradient(to right, rgba(30, 30, 30, 0.9), rgba(25, 25, 25, 0.95));
-        }
-
-        .btn {
-            padding: 6px 12px;
-            border: none;
-            border-radius: var(--radius-sm);
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 0.8rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 5px;
-        }
-
-        .btn-primary {
-            background: var(--accent-color);
-            color: black;
-            background: linear-gradient(to right, white, #e0e0e0);
-        }
-
-        .btn-primary:hover {
-            background: linear-gradient(to right, #e0e0e0, white);
-            box-shadow: 0 2px 8px rgba(255, 255, 255, 0.3);
-        }
-
-        .btn-secondary {
-            background: rgba(40, 40, 40, 0.8);
-            color: var(--text-color);
-            border: 1px solid var(--border);
-            background: linear-gradient(to right, rgba(35, 35, 35, 0.8), rgba(30, 30, 30, 0.9));
-        }
-
-        .btn-secondary:hover {
-            background: linear-gradient(to right, rgba(45, 45, 45, 0.8), rgba(40, 40, 40, 0.9));
-            border-color: var(--accent-color);
-        }
-
-        .btn-success {
-            background: var(--success);
-            color: white;
-            background: linear-gradient(to right, #4CAF50, #2E7D32);
-        }
-
-        .btn-success:hover {
-            background: linear-gradient(to right, #2E7D32, #4CAF50);
-        }
-
-        .notification {
-            position: fixed;
-            bottom: 15px;
-            right: 15px;
-            background: var(--accent-color);
-            color: black;
-            padding: 8px 15px;
-            border-radius: var(--radius-md);
-            font-weight: 600;
-            font-size: 0.8rem;
-            display: none;
-            z-index: 1000;
-            animation: slideInRight 0.3s ease, fadeOut 0.3s ease 2s forwards;
-            box-shadow: 0 4px 15px rgba(255, 255, 255, 0.4);
-            background: linear-gradient(to right, white, #e0e0e0);
-        }
-
-        @keyframes slideInRight {
-            from { transform: translateX(100%); }
-            to { transform: translateX(0); }
-        }
-
-        @keyframes fadeOut {
-            to { opacity: 0; }
-        }
-
-        .empty-state {
-            grid-column: 1 / -1;
-            text-align: center;
-            padding: 30px 15px;
-            color: var(--text-secondary);
-        }
-
-        .empty-state i {
-            font-size: 1.8rem;
-            color: var(--accent-color);
-            margin-bottom: 10px;
-            opacity: 0.7;
-        }
-
-        .empty-state h3 {
-            font-size: 1rem;
-            margin-bottom: 6px;
-            color: var(--text-color);
-        }
-
-        .empty-state p {
-            font-size: 0.8rem;
-            max-width: 400px;
-            margin: 0 auto;
-        }
-
-        .remove-script-btn {
-            position: absolute;
-            top: 6px;
-            left: 6px;
-            background: var(--danger);
-            color: white;
-            border: none;
-            border-radius: 50%;
-            width: 20px;
-            height: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            opacity: 0;
-            z-index: 2;
-            font-size: 0.6rem;
-            background: linear-gradient(to bottom, #f44336, #c62828);
-        }
-
-        .remove-script-btn:hover {
-            background: linear-gradient(to bottom, #c62828, #f44336);
-        }
-
-        .script-card:hover .remove-script-btn {
-            opacity: 1;
-        }
-
-        .content-section {
-            display: none;
-        }
-
-        .content-section.active {
-            display: block;
-        }
-    </style>
-</head>
-<body>
-    <div class="modal" id="scriptModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 class="modal-title" id="modalTitle">Script Details</h3>
-                <button class="modal-close" id="modalClose">&times;</button>
-            </div>
-            <div class="modal-body">
-                <div class="modal-script" id="modalScriptContent">Loading script...</div>
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-secondary" id="saveScriptBtn">
-                    <i class="fas fa-bookmark"></i>
-                    Save Script
-                </button>
-                <button class="btn btn-primary" id="modalCopyButton">
-                    <i class="fas fa-copy"></i>
-                    Copy Script
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <div class="floating-search">
-        <input type="text" class="search-input" placeholder="Search scripts..." id="searchInput">
-        <select class="filter-select" id="scriptType">
-            <option value="">All</option>
-            <option value="free">Free</option>
-            <option value="paid">Paid</option>
-        </select>
-        <select class="filter-select" id="sortBy">
-            <option value="updatedAt">Recent</option>
-            <option value="views">Popular</option>
-        </select>
-        <select class="filter-select" id="maxResults">
-            <option value="20">20</option>
-            <option value="30">30</option>
-            <option value="50">50</option>
-        </select>
-    </div>
-
-    <div class="tabs">
-        <div class="tab active" data-tab="cloud">Cloud Scripts</div>
-        <div class="tab" data-tab="saved">Saved Scripts</div>
-    </div>
-
-    <div class="content-section active" id="cloudScripts">
-        <div class="scripts-grid" id="scriptsContainer">
-            <div class="empty-state">
-                <i class="fas fa-spinner fa-spin"></i>
-                <h3>Loading scripts...</h3>
-            </div>
-        </div>
-    </div>
-
-    <div class="content-section" id="savedScripts">
-        <div class="scripts-grid" id="localScriptsGrid">
-            <div class="empty-state">
-                <i class="fas fa-book-open"></i>
-                <h3>No saved scripts</h3>
-                <p>Save scripts by clicking the bookmark icon in the script modal</p>
-            </div>
-        </div>
-    </div>
-
-    <div class="notification" id="notification">
-        <i class="fas fa-check-circle"></i>
-        <span>Script copied!</span>
-    </div>
     <script>
-        let scriptsData = [];
-        let currentPage = 1;
-        let totalPages = 1;
-        let currentScriptIndex = -1;
-        let currentScript = null;
-        const proxies = [
-            'https://api.codetabs.com/v1/proxy/?quest=',
-            'https://thingproxy.freeboard.io/fetch/',
-            'https://corsproxy.io/?'
-        ];
-        let currentProxy = 0;
-        let currentTab = 'cloud';
-
-        function getLocalScripts() {
-            const scripts = localStorage.getItem('savedScripts');
-            return scripts ? JSON.parse(scripts) : [];
-        }
-
-        function saveLocalScript(script) {
-            const scripts = getLocalScripts();
-            if (!scripts.some(s => s.title === script.title && s.script === script.script)) {
-                scripts.push(script);
-                localStorage.setItem('savedScripts', JSON.stringify(scripts));
-                return true;
-            }
-            return false;
-        }
-
-        function removeLocalScript(index) {
-            const scripts = getLocalScripts();
-            scripts.splice(index, 1);
-            localStorage.setItem('savedScripts', JSON.stringify(scripts));
-            renderLocalScripts();
-            return scripts;
-        }
-
-        function renderLocalScripts() {
-            const container = document.getElementById('localScriptsGrid');
-            const scripts = getLocalScripts();
-            
-            if (scripts.length === 0) {
-                container.innerHTML = `
-                    <div class="empty-state">
-                        <i class="fas fa-book-open"></i>
-                        <h3>No saved scripts</h3>
-                        <p>Save scripts by clicking the bookmark icon in the script modal</p>
-                    </div>
-                `;
-                return;
-            }
-            
-            let html = '';
-            scripts.forEach((script, index) => {
-                html += `
-                    <div class="script-card" style="animation-delay: ${index * 0.05}s">
-                        <button class="remove-script-btn" data-index="${index}">
-                            <i class="fas fa-times"></i>
-                        </button>
-                        <div class="script-image-container">
-                            <img
-                                src="${script.image || 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMDAiIGhlaWdodD0iMTgwIiB2aWV3Qm94PSIwIDAgMzAwIDE4MCI+PHJlY3Qgd2lkdGg9IjMwMCIgaGVpZ2h0PSIxODAiIGZpbGw9IiMzMzMzMzMiLz48dGV4dCB4PSI1MCUiIHk9IjUwJSIgZm9udC1mYW1pbHk9IkludGVyIiBmb250LXNpemU9IjE0IiBmaWxsPSIjYjBiMGIwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkb21pbmFudC1iYXNlbGluZT0ibWlkZGxlIj5ObyBJbWFnZTwvdGV4dD48L3N2Zz4='}"
-                                class="script-image"
-                                onerror="this.src='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMDAiIGhlaWdodD0iMTgwIiB2aWV3Qm94PSIwIDAgMzAwIDE4MCI+PHJlY3Qgd2lkdGg9IjMwMCIgaGVpZ2h0PSIxODAiIGZpbGw9IiMzMzMzMzMiLz48dGV4dCB4PSI1MCUiIHk9IjUwJSIgZm9udC1mYW1pbHk9IkludGVyIiBmb250LXNpemU9IjE0IiBmaWxsPSIjYjBiMGIwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkb21pbmFudC1iYXNlbGluZT0ibWlkZGxlIj5JbWFnZSBFcnJvcjwvdGV4dD48L3N2Zz4='"
-                            >
-                        </div>
-                        <div class="script-content">
-                            <h3 class="script-title" title="${script.title}">${script.title}</h3>
-                            <p class="script-info">
-                                <i class="fas fa-gamepad"></i>
-                                ${script.game || 'No game specified'}
-                            </p>
-                            <div class="script-stats">
-                                <div class="stat-item">
-                                    <i class="fas fa-calendar-alt"></i>
-                                    <span>${script.date ? new Date(script.date).toLocaleDateString() : 'N/A'}</span>
-                                </div>
-                            </div>
-                            <button class="btn btn-primary" data-index="${index}" data-local="true" style="width: 100%; margin-top: auto;">
-                                <i class="fas fa-copy"></i>
-                                Copy Script
-                            </button>
-                        </div>
-                    </div>
-                `;
-            });
-            
-            container.innerHTML = html;
-            
-            document.querySelectorAll('#localScriptsGrid .btn-primary').forEach(btn => {
-                btn.addEventListener('click', handleLocalCopy);
-            });
-            
-            document.querySelectorAll('.remove-script-btn').forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    const index = btn.dataset.index;
-                    removeLocalScript(index);
-                    showMessage('Script removed from your collection');
-                });
-            });
-            
-            document.querySelectorAll('#localScriptsGrid .script-card').forEach(card => {
-                card.addEventListener('click', (e) => {
-                    if (e.target.tagName === 'BUTTON' || e.target.closest('button')) return;
-                    
-                    const index = Array.from(card.parentElement.children).indexOf(card);
-                    const scripts = getLocalScripts();
-                    openScriptModal(index, true);
-                });
-            });
-        }
-
-        function switchTab(tab) {
-            currentTab = tab;
-            document.querySelectorAll('.tab').forEach(t => {
-                t.classList.toggle('active', t.dataset.tab === tab);
-            });
-            document.querySelectorAll('.content-section').forEach(section => {
-                section.classList.toggle('active', section.id === `${tab}Scripts`);
-            });
-            
-            if (tab === 'saved') {
-                renderLocalScripts();
-            }
-        }
-
-        async function fetchWithRetry(url, retries = 3) {
-            try {
-                const proxyUrl = proxies[currentProxy] + encodeURIComponent(url);
-                const response = await fetch(proxyUrl, {
-                    headers: {
-                        'Accept': 'application/json'
-                    }
-                });
-                
-                if (!response.ok) throw new Error(`HTTP error ${response.status}`);
-                
-                const data = await response.json();
-                return data;
-            } catch (error) {
-                if (retries > 0) {
-                    currentProxy = (currentProxy + 1) % proxies.length;
-                    await new Promise(resolve => setTimeout(resolve, 1000));
-                    return fetchWithRetry(url, retries - 1);
-                }
-                throw error;
-            }
-        }
-
-        async function loadScripts(search = '', page = 1) {
-            const container = document.getElementById('scriptsContainer');
-            container.innerHTML = '<div class="empty-state"><i class="fas fa-spinner fa-spin"></i><h3>Loading scripts...</h3></div>';
-            
-            try {
-                const scriptType = document.getElementById('scriptType').value;
-                const sortBy = document.getElementById('sortBy').value;
-                const maxResults = document.getElementById('maxResults').value;
-                
-                let apiUrl;
-                if (search) {
-                    apiUrl = `https://scriptblox.com/api/script/search?q=${encodeURIComponent(search)}&page=${page}&max=${maxResults}`;
-                } else {
-                    apiUrl = `https://scriptblox.com/api/script/fetch?page=${page}&max=${maxResults}`;
-                }
-                
-                if (scriptType) apiUrl += `&mode=${scriptType}`;
-                if (sortBy) apiUrl += `&sortBy=${sortBy}`;
-                
-                let data;
-                try {
-                    const response = await fetch(apiUrl);
-                    data = await response.json();
-                } catch (directError) {
-                    console.log('Direct fetch failed, using proxy...');
-                    data = await fetchWithRetry(apiUrl);
-                }
-                
-                if (data && data.result && data.result.scripts) {
-                    scriptsData = data.result.scripts;
-                    totalPages = data.result.totalPages || 1;
-                } else if (data && Array.isArray(data)) {
-                    scriptsData = data;
-                    totalPages = 1;
-                } else {
-                    scriptsData = [];
-                    totalPages = 1;
-                }
-                
-                currentPage = page;
-                
-                renderScripts();
-            } catch (error) {
-                console.error('Error fetching scripts:', error);
-                showMessage(`Error: ${error.message}`);
-                container.innerHTML = `
-                    <div class="empty-state">
-                        <i class="fas fa-exclamation-triangle"></i>
-                        <h3>Failed to load scripts</h3>
-                        <p>We couldn't connect to the server. Please check your internet connection and try again.</p>
-                    </div>
-                `;
-            }
-        }
-
-        function renderScripts() {
-            const container = document.getElementById('scriptsContainer');
-            
-            if (scriptsData.length === 0) {
-                container.innerHTML = `
-                    <div class="empty-state">
-                        <i class="fas fa-search"></i>
-                        <h3>No scripts found</h3>
-                        <p>Try adjusting your search or filters to find what you're looking for.</p>
-                    </div>
-                `;
-                return;
-            }
-            
-            let html = '';
-            scriptsData.forEach((script, index) => {
-                const raw = script.image;
-                const imageUrl = raw
-                    ? (raw.startsWith('http') ? raw : `https://scriptblox.com${raw}`)
-                    : 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMDAiIGhlaWdodD0iMTgwIiB2aWV3Qm94PSIwIDAgMzAwIDE4MCI+PHJlY3Qgd2lkdGg9IjMwMCIgaGVpZ2h0PSIxODAiIGZpbGw9IiMyNTI1MjUiLz48dGV4dCB4PSI1MCUiIHk9IjUwJSIgZm9udC1mYW1pbHk9IkludGVyIiBmb250LXNpemU9IjE0IiBmaWxsPSIjYjBiMGIwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkb21pbmFudC1iYXNlbGluZT0ibWlkZGxlIj5ObyBJbWFnZTwvdGV4dD48L3N2Zz4=';
-    
-                html += `
-                    <div class="script-card" style="animation-delay: ${index * 0.05}s" data-index="${index}">
-                        ${script.paid ? '<span class="script-badge">Premium</span>' : ''}
-                        <div class="script-image-container">
-                            <img
-                                src="${imageUrl}"
-                                class="script-image"
-                                onerror="this.src='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMDAiIGhlaWdodD0iMTgwIiB2aWV3Qm94PSIwIDAgMzAwIDE4MCI+PHJlY3Qgd2lkdGg9IjMwMCIgaGVpZ2h0PSIxODAiIGZpbGw9IiMyNTI1MjUiLz48dGV4dCB4PSI1MCUiIHk9IjUwJSIgZm9udC1mYW1pbHk9IkludGVyIiBmb250LXNpemU9IjE0IiBmaWxsPSIjYjBiMGIwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkb21pbmFudC1iYXNlbGluZT0ibWlkZGxlIj5JbWFnZSBFcnJvcjwvdGV4dD48L3N2Zz4='"
-                            >
-                        </div>
-                        <div class="script-content">
-                            <h3 class="script-title" title="${script.title}">${script.title}</h3>
-                            <p class="script-info">
-                                <i class="fas fa-gamepad"></i>
-                                ${script.game?.name || 'No game specified'}
-                            </p>
-                            <div class="script-stats">
-                                <div class="stat-item">
-                                    <i class="fas fa-eye"></i>
-                                    <span>${script.views?.toLocaleString() || 'N/A'}</span>
-                                </div>
-                                <div class="stat-item">
-                                    <i class="fas fa-thumbs-up"></i>
-                                    <span>${script.likeCount?.toLocaleString() || 'N/A'}</span>
-                                </div>
-                                <div class="stat-item">
-                                    <i class="fas fa-calendar-alt"></i>
-                                    <span>${script.updatedAt ? new Date(script.updatedAt).toLocaleDateString() : 'N/A'}</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                `;
-            });
-            
-            container.innerHTML = html;
-            
-            document.querySelectorAll('.script-card').forEach(card => {
-                card.addEventListener('click', (e) => {
-                    if (e.target.tagName === 'BUTTON' || e.target.closest('button')) return;
-                    
-                    const index = card.dataset.index;
-                    openScriptModal(index);
-                });
-            });
-        }
-
-        function openScriptModal(index, isLocal = false) {
-            let script;
-            if (isLocal) {
-                const scripts = getLocalScripts();
-                script = scripts[index];
-                currentScript = {...script, isLocal: true, localIndex: index};
-            } else {
-                script = scriptsData[index];
-                currentScript = {...script, isLocal: false, index: index};
-            }
-            
-            if (!script) return;
-            
-            const modal = document.getElementById('scriptModal');
-            const modalTitle = document.getElementById('modalTitle');
-            const modalContent = document.getElementById('modalScriptContent');
-            const modalCopyBtn = document.getElementById('modalCopyButton');
-            const saveScriptBtn = document.getElementById('saveScriptBtn');
-            
-            modalTitle.textContent = script.title;
-            modalContent.textContent = script.script || 'No script content available';
-            
-            const scripts = getLocalScripts();
-            const isSaved = scripts.some(s => s.title === script.title && s.script === script.script);
-            
-            if (isSaved) {
-                saveScriptBtn.innerHTML = '<i class="fas fa-check"></i> Saved';
-                saveScriptBtn.classList.add('btn-success');
-                saveScriptBtn.classList.remove('btn-secondary');
-            } else {
-                saveScriptBtn.innerHTML = '<i class="fas fa-bookmark"></i> Save Script';
-                saveScriptBtn.classList.add('btn-secondary');
-                saveScriptBtn.classList.remove('btn-success');
-            }
-            
-            modal.classList.add('active');
-            document.body.style.overflow = 'hidden';
-            
-            modalCopyBtn.onclick = () => {
-                navigator.clipboard.writeText(script.script).then(() => {
-                    showMessage('Script copied to clipboard!');
-                }).catch(err => {
-                    showMessage('Failed to copy script');
-                    console.error('Failed to copy:', err);
-                });
-            };
-        }
-
-        function closeScriptModal() {
-            const modal = document.getElementById('scriptModal');
-            modal.classList.remove('active');
-            document.body.style.overflow = '';
-            currentScript = null;
-        }
-
-        function saveCurrentScript() {
-            if (!currentScript) return;
-            
-            const scriptToSave = {
-                title: currentScript.title,
-                script: currentScript.script,
-                game: currentScript.game?.name || 'No game specified',
-                image: currentScript.image,
-                date: new Date().toISOString()
-            };
-            
-            const saved = saveLocalScript(scriptToSave);
-            const saveScriptBtn = document.getElementById('saveScriptBtn');
-            
-            if (saved) {
-                saveScriptBtn.innerHTML = '<i class="fas fa-check"></i> Saved';
-                saveScriptBtn.classList.add('btn-success');
-                saveScriptBtn.classList.remove('btn-secondary');
-                showMessage('Script saved to your collection!');
-                
-                if (currentTab === 'saved') {
-                    renderLocalScripts();
-                }
-            } else {
-                showMessage('This script is already in your collection');
-            }
-        }
-
-        function handleLocalCopy(event) {
-            event.stopPropagation();
-            const index = event.target.dataset.index;
-            const scripts = getLocalScripts();
-            const script = scripts[index];
-            
-            if (!script) {
-                showMessage('No script found');
-                return;
-            }
-
-            navigator.clipboard.writeText(script.script).then(() => {
-                showMessage('Script copied to clipboard!');
-                
-                const button = event.target;
-                button.innerHTML = '<i class="fas fa-check"></i> Copied!';
-                button.classList.add('btn-success');
-                button.classList.remove('btn-primary');
-                
-                setTimeout(() => {
-                    button.innerHTML = '<i class="fas fa-copy"></i> Copy Script';
-                    button.classList.add('btn-primary');
-                    button.classList.remove('btn-success');
-                }, 2000);
-            }).catch(err => {
-                showMessage('Failed to copy script');
-                console.error('Failed to copy:', err);
-            });
-        }
-
-        function searchScripts() {
-            const searchTerm = document.getElementById('searchInput').value.trim();
-            loadScripts(searchTerm, 1);
-        }
-
-        function showMessage(text) {
-            const notif = document.getElementById('notification');
-            notif.querySelector('span').textContent = text;
-            notif.style.display = 'flex';
-            notif.style.animation = 'none';
-            void notif.offsetWidth;
-            notif.style.animation = 'slideInRight 0.5s ease, fadeOut 0.5s ease 2.5s forwards';
-        }
-
-        function setupFilterListeners() {
-            document.getElementById('scriptType').addEventListener('change', searchScripts);
-            document.getElementById('sortBy').addEventListener('change', searchScripts);
-            document.getElementById('maxResults').addEventListener('change', searchScripts);
-        }
-
-        function debounce(func, wait) {
-            let timeout;
-            return function() {
-                const context = this, args = arguments;
-                clearTimeout(timeout);
-                timeout = setTimeout(() => func.apply(context, args), wait);
-            };
-        }
-
-        document.addEventListener('DOMContentLoaded', () => {
-            loadScripts();
-            setupFilterListeners();
-            
-            const searchInput = document.getElementById('searchInput');
-            const debouncedSearch = debounce(searchScripts, 500);
-            searchInput.addEventListener('input', debouncedSearch);
-            
-            searchInput.addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') searchScripts();
-            });
-            
-            document.getElementById('modalClose').addEventListener('click', closeScriptModal);
-            
-            document.getElementById('scriptModal').addEventListener('click', (e) => {
-                if (e.target === document.getElementById('scriptModal')) {
-                    closeScriptModal();
-                }
-            });
-            
-            document.querySelectorAll('.tab').forEach(tab => {
-                tab.addEventListener('click', () => {
-                    switchTab(tab.dataset.tab);
-                });
-            });
-            
-            document.getElementById('saveScriptBtn').addEventListener('click', saveCurrentScript);
+        (function (root, name, factory) {
         });
     </script>
+
+    <style type="text/css">
+        <!-- @import url('https://fonts.googleapis.com/css2?family=JetBrains Mono:wght@600&display=swap'); -->
+        @font-face {
+            font-family: Poppins;
+            src: url(font/Poppins-Regular.ttf);
+        }
+        * {
+            font-family: 'Poppins', sans-serif !important;
+            font-weight: 400 !important;
+        }
+
+        /* Transparent Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+            background-color: transparent;
+        }
+
+        ::-webkit-scrollbar-track {
+            background-color: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+
+        ::-webkit-scrollbar-corner {
+            background-color: transparent;
+        }
+
+        html,
+        body {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background: transparent !important;
+        }
+
+        /* CONTEXT MENU (VISUAL ADDITION ONLY) */
+        .context-menu {
+            position: fixed;
+            background: #000000;
+            border: 1px solid #111;
+            border-radius: 12px;
+            padding: 4px;
+            min-width: 150px;
+            z-index: 9999;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.9);
+            font-size: 13px;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .context-menu-item {
+            padding: 8px 12px;
+            color: #cccccc;
+            cursor: pointer;
+            border-radius: 6px;
+            transition: background 0.1s, color 0.1s;
+        }
+
+            .context-menu-item:hover {
+                background: #1a1a1a;
+                color: white;
+            }
+    </style>
+    <meta charset="utf-8" />
+    <title>Monco67</title>
+</head>
+
+<body>
+    <div class="editor-container">
+        <div id="tabs-container" class="tabs-container"></div>
+        <div id="container" style="width:100%;height:calc(100% - 40px);"></div>
+    </div>
+
+    <script src="vs/loader.js"></script>
+
+    <script>
+        // REMOVE DEFAULT BROWSER RIGHT CLICK
+        document.addEventListener("contextmenu", e => e.preventDefault());
+
+        // CONTEXT MENU HELPER (ADDITION ONLY)
+        let __ctxMenu = null;
+        function showContextMenu(x, y, items) {
+        if (__ctxMenu) __ctxMenu.remove();
+        const menu = document.createElement("div");
+        menu.className = "context-menu";
+
+        items.forEach(i => {
+        const el = document.createElement("div");
+        el.className = "context-menu-item";
+        el.textContent = i.label;
+        el.onclick = () => {
+        i.action();
+        menu.remove();
+        };
+        menu.appendChild(el);
+        });
+
+        menu.style.left = x + "px";
+        menu.style.top = y + "px";
+        document.body.appendChild(menu);
+        __ctxMenu = menu;
+
+        document.addEventListener("click", () => menu.remove(), { once: true });
+        }
+    </script>
+
+
+    <style type="text/css">
+        * {
+            font-family: 'Poppins', sans-serif !important;
+            font-weight: 400 !important;
+        }
+
+        html,
+        body {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background: #000000 !important;
+            font-family: 'Poppins', sans-serif !important;
+            font-weight: 400 !important;
+        }
+    </style>
+    <meta charset="utf-8" />
+    <title></title>
+    </head>
+
+    <body>
+        <div class="editor-container">
+            <div id="tabs-container" class="tabs-container"></div>
+            <div id="container" style="width:100%;height:calc(100% - 40px);"></div>
+        </div>
+
+    <div id="rename-popup-overlay" class="popup-overlay" style="display: none;">
+        <div class="popup-content">
+            <div class="popup-title">Rename Tab</div>
+            <div class="popup-label">Enter new name:</div>
+            <input type="text" id="rename-input" placeholder="" spellcheck="false">
+            <div class="popup-buttons">
+                <button id="rename-save-btn" class="popup-btn save">Save</button>
+                <button id="rename-cancel-btn" class="popup-btn cancel">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+        <style>
+            .editor-container {
+                width: 100%;
+                height: 100%;
+                display: flex;
+                flex-direction: column;
+                background: #000000 !important;
+                font-family: 'Poppins', sans-serif !important;
+                font-weight: 400 !important;
+            }
+
+            .tabs-container {
+                background: #000000 !important;
+                display: flex;
+                height: 40px;
+                overflow-x: auto;
+                border-bottom: none;
+                gap: 4px;
+                padding-left: 5px;
+                padding-top: 5px;
+                font-family: 'Poppins', sans-serif !important;
+                font-weight: 400 !important;
+            }
+
+            .tab {
+                display: flex;
+                align-items: center;
+                padding: 0 10px;
+                background-color: #0a0a0a;
+                color: #666666;
+                min-width: 90px;
+                max-width: 160px;
+                position: relative;
+                cursor: pointer;
+                transition: background-color 0.2s, color 0.2s, border-color 0.2s;
+                user-select: none;
+                border: 1px solid #111111;
+                border-radius: 8px;
+                height: 30px;
+                font-family: 'Poppins', sans-serif !important;
+                font-weight: 400 !important;
+            }
+
+            .tab.active {
+                background-color: #000000;
+                color: #e0e0e0;
+                border: 1px solid #222222;
+            }
+
+            .tab-title {
+                flex-grow: 1;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                font-size: 13px;
+                padding-left: 2px;
+                font-family: 'Poppins', sans-serif !important;
+                font-weight: 400 !important;
+            }
+
+            .tab-title.editing {
+                background-color: #1a1a1a;
+                border: 1px solid #333333;
+                padding: 2px 4px;
+                border-radius: 3px;
+                outline: none;
+            }
+
+            .tab-close {
+                margin-left: 6px;
+                opacity: 0.6;
+                transition: opacity 0.2s, background-color 0.2s;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                width: 16px;
+                height: 16px;
+                border-radius: 50%;
+                font-size: 12px;
+                font-family: 'Poppins', sans-serif !important;
+                font-weight: 400 !important;
+            }
+
+            .tab-close:hover {
+                opacity: 1;
+                background-color: #1a1a1a;
+            }
+
+            .tab.new-tab {
+                min-width: 30px;
+                max-width: 30px;
+                justify-content: center;
+                background-color: #0a0a0a;
+                border: 1px solid #111111;
+                border-radius: 8px;
+                padding: 0;
+                margin-left: 4px;
+                font-size: 18px;
+            }
+
+            .tab.new-tab:hover {
+                background-color: #1a1a1a;
+                color: #e0e0e0;
+            }
+
+            @keyframes tabAppear {
+                from {
+                    opacity: 0;
+                    transform: translateY(-8px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+
+            @keyframes tabRemove {
+                to {
+                    opacity: 0;
+                    transform: translateX(-8px);
+                }
+            }
+
+            .tab.new {
+                animation: tabAppear 0.2s ease-out;
+            }
+
+            .tab.removing {
+                animation: tabRemove 0.2s ease-out;
+            }
+
+            /* POPUP STYLES */
+            .popup-overlay {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.5);
+                z-index: 10000;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                backdrop-filter: blur(2px);
+            }
+
+            .popup-content {
+                background: #000000;
+                border: 1px solid #111;
+                border-radius: 14px;
+                padding: 20px;
+                width: 300px;
+                box-shadow: 0 20px 50px rgba(0,0,0,0.9);
+                display: flex;
+                flex-direction: column;
+                gap: 10px;
+                animation: popupIn 0.2s ease-out;
+            }
+
+            @keyframes popupIn {
+                from { opacity: 0; transform: scale(0.95); }
+                to { opacity: 1; transform: scale(1); }
+            }
+
+            .popup-title {
+                color: #e0e0e0;
+                font-size: 18px;
+                font-weight: 600;
+                text-align: center;
+                margin-bottom: 2px;
+            }
+
+            .popup-label {
+                color: #888;
+                font-size: 13px;
+                text-align: left;
+                margin-left: 2px;
+            }
+
+            #rename-input {
+                background: #0a0a0a;
+                border: 1px solid #222;
+                border-radius: 8px;
+                padding: 10px;
+                color: #e0e0e0;
+                font-family: 'Poppins', sans-serif;
+                font-size: 13px;
+                outline: none;
+                transition: border-color 0.2s;
+            }
+
+            #rename-input:focus {
+                border-color: #333;
+            }
+
+            .popup-buttons {
+                display: flex;
+                justify-content: center;
+                gap: 10px;
+                margin-top: 5px;
+            }
+
+            .popup-btn {
+                padding: 8px 20px;
+                border-radius: 8px;
+                border: 1px solid #222;
+                font-family: 'Poppins', sans-serif;
+                font-weight: 400;
+                font-size: 13px;
+                cursor: pointer;
+                transition: all 0.2s;
+                background: #0a0a0a;
+                color: #ccc;
+                min-width: 80px;
+            }
+
+            .popup-btn:hover {
+                background: #1a1a1a;
+                color: #fff;
+                border-color: #333;
+            }
+
+            .popup-btn.save {
+                background: #0a0a0a;
+            }
+
+            .popup-btn.cancel {
+                background: #0a0a0a;
+            }
+
+        </style>
+        <script src="vs/loader.js"></script>
+        <script type="text/javascript">
+            require.config({
+            paths: {
+            'vs': 'vs'
+            }
+            });
+
+            let editor;
+            let Proposals = [];
+            let currentTab = null;
+            let tabs = [];
+
+            class Tab {
+            constructor(title, content = '') {
+            this.id = 'tab-' + Math.random().toString(36).substr(2, 9);
+            this.title = title;
+            this.content = content;
+            this.element = null;
+            }
+            }
+
+            function saveTabs() {
+            const tabsData = tabs.map(tab => ({
+            id: tab.id,
+            title: tab.title,
+            content: tab.content
+            }));
+            localStorage.setItem('editorTabs', JSON.stringify(tabsData));
+            }
+            function loadTabs() {
+            const savedTabs = localStorage.getItem('editorTabs');
+            if (savedTabs) {
+            const tabsData = JSON.parse(savedTabs);
+            tabsData.forEach(tabData => {
+            addTab(tabData.title, tabData.content, tabData.id);
+            });
+            } else {
+            addTab('New Tab 1', '--[[ Yub-X Executor ]]--\n\nprint("Welcome To Yub-X")');
+
+            }
+            }
+
+            let renameTabTarget = null;
+
+            function showRenamePopup(tab) {
+                renameTabTarget = tab;
+                const overlay = document.getElementById('rename-popup-overlay');
+                const input = document.getElementById('rename-input');
+                
+                input.value = tab.title;
+                overlay.style.display = 'flex';
+                input.focus();
+                input.select();
+            }
+
+            function closeRenamePopup() {
+                const overlay = document.getElementById('rename-popup-overlay');
+                overlay.style.display = 'none';
+                renameTabTarget = null;
+            }
+
+            function saveRename() {
+                if (renameTabTarget) {
+                    const input = document.getElementById('rename-input');
+                    const newTitle = input.value.trim();
+                    if (newTitle) {
+                        renameTabTarget.title = newTitle;
+                        if (renameTabTarget.element) {
+                            const titleEl = renameTabTarget.element.querySelector('.tab-title');
+                            if (titleEl) titleEl.textContent = newTitle;
+                        }
+                        saveTabs();
+                    }
+                    closeRenamePopup();
+                }
+            }
+
+            // Init popup listeners
+            window.addEventListener('load', () => {
+                const cancelBtn = document.getElementById('rename-cancel-btn');
+                const saveBtn = document.getElementById('rename-save-btn');
+                const input = document.getElementById('rename-input');
+                const overlay = document.getElementById('rename-popup-overlay');
+
+                if (cancelBtn) cancelBtn.onclick = closeRenamePopup;
+                if (saveBtn) saveBtn.onclick = saveRename;
+                if (input) {
+                    input.onkeydown = (e) => {
+                        if (e.key === 'Enter') saveRename();
+                        if (e.key === 'Escape') closeRenamePopup();
+                    };
+                }
+                if (overlay) {
+                    overlay.onclick = (e) => {
+                        if (e.target.id === 'rename-popup-overlay') closeRenamePopup();
+                    };
+                }
+            });
+
+            function createTabElement(tab) {
+            const tabElement = document.createElement('div');
+            tabElement.className = 'tab new';
+            tabElement.setAttribute('data-tab-id', tab.id);
+
+            const titleElement = document.createElement('div');
+            titleElement.className = 'tab-title';
+            titleElement.textContent = tab.title;
+
+            titleElement.ondblclick = (e) => {
+            e.stopPropagation();
+            showRenamePopup(tab);
+            };
+
+            const closeButton = document.createElement('div');
+            closeButton.className = 'tab-close';
+            closeButton.innerHTML = '✕';
+            closeButton.onclick = (e) => {
+            e.stopPropagation();
+            if (tabs.length > 1) {
+            removeTab(tab.id);
+            }
+            };
+
+            tabElement.appendChild(titleElement);
+            tabElement.appendChild(closeButton);
+
+            tabElement.onclick = () => switchTab(tab.id);
+
+            return tabElement;
+            }
+
+            function createNewTabButton() {
+            const newTabButton = document.createElement('div');
+            newTabButton.className = 'tab new-tab';
+            newTabButton.innerHTML = '+';
+            newTabButton.onclick = () => {
+            const newTab = addTab('New Tab ' + (tabs.length + 1));
+            };
+            return newTabButton;
+            }
+
+            function addTab(title, content = '', id = null) {
+            const tab = new Tab(title, content);
+            if (id) tab.id = id;
+            tabs.push(tab);
+
+            const tabsContainer = document.getElementById('tabs-container');
+            const newTabButton = tabsContainer.querySelector('.new-tab');
+
+            tab.element = createTabElement(tab);
+            if (newTabButton) {
+            tabsContainer.insertBefore(tab.element, newTabButton);
+            } else {
+            tabsContainer.appendChild(tab.element);
+            tabsContainer.appendChild(createNewTabButton());
+            }
+
+            switchTab(tab.id);
+            saveTabs();
+            return tab;
+            }
+
+            function removeTab(tabId) {
+            const tabIndex = tabs.findIndex(t => t.id === tabId);
+            if (tabIndex === -1) return;
+
+            if (tabs.length <= 1) return;
+
+            const tab = tabs[tabIndex];
+            tab.element.classList.add('removing');
+
+            setTimeout(() => {
+            tabs.splice(tabIndex, 1);
+            tab.element.remove();
+
+            if (currentTab === tabId) {
+            switchTab(tabs[Math.min(tabIndex, tabs.length - 1)].id);
+            }
+            saveTabs();
+            }, 200);
+            }
+            function switchTab(tabId) {
+            const tab = tabs.find(t => t.id === tabId);
+            if (!tab) return;
+
+            tabs.forEach(t => {
+            if (t.element) {
+            t.element.classList.remove('active');
+            }
+            });
+
+            // Always set the clicked tab as active
+            if (tab.element) {
+                tab.element.classList.add('active');
+            }
+
+            if (currentTab !== tabId) {
+            if (currentTab) {
+            const oldTab = tabs.find(t => t.id === currentTab);
+            if (oldTab) {
+            oldTab.content = editor.getValue();
+            saveTabs();
+            }
+            }
+
+            editor.setValue(tab.content);
+            currentTab = tabId;
+            }
+            }
+
+            function setupAutosave() {
+            let saveTimeout;
+            editor.onDidChangeModelContent(() => {
+            clearTimeout(saveTimeout);
+            saveTimeout = setTimeout(() => {
+            if (currentTab) {
+            const tab = tabs.find(t => t.id === currentTab);
+            if (tab) {
+            tab.content = editor.getValue();
+            saveTabs();
+            }
+            }
+            }, 1);
+            });
+            }
+function loadFileIntoTab(fileName, content) {
+        // Check if a tab with this name already exists
+        const existingTab = tabs.find(tab => tab.title === fileName);
+        
+        if (existingTab) {
+            // Switch to existing tab and update content
+            switchTab(existingTab.id);
+            setTimeout(() => {
+                editor.setValue(content);
+                existingTab.content = content;
+                saveTabs();
+            }, 10);
+        } else {
+            // Create new tab with file name and content
+            const newTab = addTab(fileName, content);
+            setTimeout(() => {
+                editor.setValue(content);
+            }, 10);
+            }
+            }
+
+            // Make function available globally
+            window.loadFileIntoTab = loadFileIntoTab;
+
+            var enableAntiSkid;
+            var disableAntiSkid;
+            var SetText;
+            var ShowMinimap;
+            var HideMinimap;
+            var EnableAutoComplete;
+            var DisableAutoComplete;
+            var GetText;
+            var AddIntellisense;
+            var Refresh;
+
+            // Global theme setter to handle race conditions
+            window.pendingTheme = null;
+            window.setMonacoTheme = function(themeData) {
+                if (typeof monaco !== 'undefined' && monaco.editor) {
+                    monaco.editor.defineTheme('custom-theme', themeData);
+                    monaco.editor.setTheme('custom-theme');
+                } else {
+                    window.pendingTheme = themeData;
+                }
+            };
+
+            window.setTabTheme = function(bgColor) {
+                let style = document.getElementById('dynamic-tab-style');
+                if (!style) {
+                    style = document.createElement('style');
+                    style.id = 'dynamic-tab-style';
+                    document.head.appendChild(style);
+                }
+                style.innerHTML = `
+                    .tab.active {
+                        background-color: ${bgColor} !important;
+                        border-color: ${bgColor} !important;
+                    }
+                `;
+            };
+
+            require(['vs/editor/editor.main'], function () {
+            
+            // Apply pending theme if exists
+            if (window.pendingTheme) {
+                monaco.editor.defineTheme('custom-theme', window.pendingTheme);
+                monaco.editor.setTheme('custom-theme');
+                window.pendingTheme = null;
+            }
+
+            function getDependencyProposals() {
+            return Proposals;
+            }
+
+            monaco.languages.registerCompletionItemProvider('lua', {
+            provideCompletionItems: function (model, position) {
+            return getDependencyProposals();
+            },
+            triggerCharacters: ['.', ':', '"'],
+            });
+
+
+           monaco.editor.defineTheme('net-theme-dark', {
+    base: 'vs-dark',
+    inherit: true,
+    colors: {
+        "editor.background": "#000000",
+        "editorLineNumber.foreground": "#444444",
+        "editorCursor.foreground": "#ffffff",
+        "editor.selectionBackground": "#1a1a1a",
+        "editor.inactiveSelectionBackground": "#00ff33",
+        "scrollbarSlider.background": "#ffffff08",
+        "scrollbarSlider.hoverBackground": "#ffffff15",
+        "scrollbarSlider.activeBackground": "#ffffff25",
+        "editorError.foreground": "#ff0000",
+        "editorWarning.foreground": "#ffaa00"
+    },
+    rules: [
+        { token: '', foreground: 'b0b0b0' },
+        { token: 'keyword', foreground: '00ff33' },
+        { token: 'number', foreground: '00f333' },
+        { token: 'string', foreground: 'ffffff' },
+        { token: 'string.escape', foreground: 'ffffff' },
+        { token: 'comment', foreground: '4a4a4a' },
+        { token: 'operator', foreground: '9704de' },
+        { token: 'delimiter', foreground: '00ff33' },
+        { token: 'delimiter.bracket', foreground: '6b8e7a' },
+        { token: 'type', foreground: '8a8a8a' },
+        { token: 'function', foreground: '00ff66' },
+        { token: 'function.builtin', foreground: '00ff66' },
+        { token: 'function.call', foreground: '00ff66' },
+        { token: 'identifier', foreground: '00ff33' }
+    ]
+});
+
+
+            editor = monaco.editor.create(document.getElementById('container'), {
+            language: 'lua',
+            theme: "net-theme-dark",
+            acceptSuggestionOnEnter: "smart",
+            cursorSmoothCaretAnimation: true,
+            suggestOnTriggerCharacters: true,
+            suggestSelection: "recentlyUsed",
+            folding: true,
+            dragAndDrop: true,
+            links: false,
+            minimap: {
+            enabled: false,
+            },
+            scrollbar: {
+                vertical: 'visible',
+                horizontal: 'visible',
+                useShadows: false,
+                verticalHasArrows: false,
+                horizontalHasArrows: false,
+                verticalScrollbarSize: 8,
+                horizontalScrollbarSize: 8
+            },
+            showFoldingControls: "always",
+            smoothScrolling: true,
+            stopRenderingLineAfter: 6500,
+            cursorBlinking: "smooth",
+            cursorSmoothCaretAnimation: true,
+            foldingHighlight: false,
+            fontLigatures: true,
+            formatOnPaste: true,
+            showDeprecated: true,
+            suggest: {
+            snippetsPreventQuickSuggestions: false,
+            },
+            padding: {
+            top: 24,
+            },
+            fontFamily: "'Poppins', sans-serif",
+            fontWeight: "400"
+            });
+
+            loadTabs();
+            setupAutosave();
+
+            EnableAutoComplete = function(){
+            editor.updateOptions({
+            suggestOnTriggerCharacters: true,
+            acceptSuggestionOnEnter : "smart",
+            wordBasedSuggestions : true
+            });
+            }
+
+            DisableAutoComplete = function(){
+            editor.updateOptions({
+            suggestOnTriggerCharacters: false,
+            acceptSuggestionOnEnter : "off",
+            wordBasedSuggestions : false
+            });
+            }
+
+            window.onresize = function () {
+            editor.layout();
+            };
+
+            ShowMinimap = function () {
+            editor.updateOptions({
+            minimap: {
+            enabled: true,
+            }
+            });
+            }
+
+            HideMinimap = function () {
+            editor.updateOptions({
+            minimap: {
+            enabled: false,
+            }
+            });
+            }
+
+            function handleover()
+            {
+            document.body.style.filter = "blur(0px)"
+            }
+            function handleleave()
+            {
+            document.body.style.filter = "blur(5px)"
+            }
+            enableAntiSkid= function()
+            {
+            document.body.style.filter = "blur(5px)";
+            document.body.addEventListener("mouseover",handleover);
+            document.body.addEventListener("mouseleave",handleleave);
+            }
+            disableAntiSkid = function()
+            {
+            document.body.style.filter = "blur(0px)";
+            document.body.removeEventListener("mouseover",handleover,false);
+            document.body.removeEventListener("mouseleave",handleleave,false);
+
+            }
+          // DISABLED error checking (no red markers)
+editor.onDidChangeModelContent(function () {
+    monaco.editor.setModelMarkers(editor.getModel(), 'luaparse', []);
+});
+
+
+            SetText = function (x) {
+            editor.setValue(x);
+            }
+
+            AddIntellisense = function (l, k, d, i) {
+            var t;
+            switch (k) {
+            case "Class":
+            t = monaco.languages.CompletionItemKind.Class;
+            break;
+            case "Color":
+            t = monaco.languages.CompletionItemKind.Color;
+            break;
+            case "Constructor":
+            t = monaco.languages.CompletionItemKind.Constructor;
+            break;
+            case "Enum":
+            t = monaco.languages.CompletionItemKind.Enum;
+            break;
+            case "Field":
+            t = monaco.languages.CompletionItemKind.Field;
+            break;
+            case "File":
+            t = monaco.languages.CompletionItemKind.File;
+            break;
+            case "Folder":
+            t = monaco.languages.CompletionItemKind.Folder;
+            break;
+            case "Function":
+            t = monaco.languages.CompletionItemKind.Function;
+            break;
+            case "Interface":
+            t = monaco.languages.CompletionItemKind.Interface;
+            break;
+            case "Keyword":
+            t = monaco.languages.CompletionItemKind.Keyword;
+            break;
+            case "Method":
+            t = monaco.languages.CompletionItemKind.Method;
+            break;
+            case "Module":
+            t = monaco.languages.CompletionItemKind.Module;
+            break;
+            case "Property":
+            t = monaco.languages.CompletionItemKind.Property;
+            break;
+            case "Reference":
+            t = monaco.languages.CompletionItemKind.Reference;
+            break;
+            case "Snippet":
+            t = monaco.languages.CompletionItemKind.Snippet;
+            break;
+            case "Text":
+            t = monaco.languages.CompletionItemKind.Text;
+            break;
+            case "Unit":
+            t = monaco.languages.CompletionItemKind.Unit;
+            break;
+            case "Value":
+            t = monaco.languages.CompletionItemKind.Value;
+            break;
+            case "Variable":
+            t = monaco.languages.CompletionItemKind.Variable;
+            break;
+            }
+
+            Proposals.push({
+            label: l,
+            kind: t,
+            detail: d,
+            insertText: i
+            });
+            }
+            async function load() {
+            var docs = await(await fetch('https://raw.githubusercontent.com/Insalad/monacoshit/refs/heads/main/blah')).json();
+
+            for (var prop in docs) {
+            for(var item in docs[prop])
+            {
+            const document = docs[prop][item];
+            AddIntellisense(document.label, document.type, document.description, document.insert);
+            }
+            }
+
+            for (const Key of ["_G", "_VERSION", "Enum", "game", "plugin", "shared", "script", "workspace", "DebuggerManager", "elapsedTime", "LoadLibrary", "PluginManager", "settings", "tick", "time", "typeof", "UserSettings"])
+            AddIntellisense(Key, "Keyword", Key, Key);
+
+            for (const Key of ["and", "break", "do", "else", "elseif", "end", "false", "for", "function", "if", "in", "local", "nil", "not", "or", "repeat", "return", "then", "true", "until", "while"])
+            AddIntellisense(Key, "Variable", Key, Key);
+
+            for (const Key of ["math.abs", "math.acos", "math.asin", "math.atan", "math.atan2", "math.ceil", "math.cos", "math.cosh", "math.deg", "math.exp", "math.floor", "math.fmod", "math.frexp", "math.huge", "math.ldexp", "math.log", "math.max", "math.min", "math.modf", "math.pi", "math.pow", "math.rad", "math.random", "math.randomseed", "math.sin", "math.sinh", "math.sqrt", "math.tan", "math.tanh", "table.concat", "table.foreach", "table.foreachi", "table.sort", "table.insert", "table.remove", "Color3.new", "Instance.new", "BrickColor.new", "Vector3.new", "Vector2.new", "debug.gethook", "debug.getinfo", "debug.getlocal", "debug.getmetatable", "debug.getregistry", "debug.getupvalue", "debug.getuservalue", "debug.sethook", "debug.setlocal", "debug.setmetatable", "debug.setupvalue", "debug.setuservalue", "debug.traceback", "debug.upvalueid", "debug.upvaluejoin", "string.byte", "string.char", "string.dump", "string.find", "string.format", "string.gmatch", "string.gsub", "string.len", "string.lower", "string.match", "string.rep", "string.reverse", "string.sub", "string.upper", "coroutine.create", "coroutine.resume", "coroutine.running", "coroutine.status", "coroutine.wrap", "coroutine.yield"])
+            AddIntellisense(Key, "Method", Key, Key);
+
+            for (const Key of ["Drawing", "debug", "Instance", "Color3", "Vector3", "Vector2", "BrickColor", "math", "table", "string", "coroutine", "Humanoid", "ClickDetector", "LocalScript", "Model", "ModuleScript", "Mouse", "Part", "Player", "Script", "Tool", "RunService", "UserInputService", "Workspace"])
+            AddIntellisense(Key, "Class", Key, Key);
+
+            for (const Key of ["print", "warn", "wait", "info", "printidentity", "assert", "collectgarbage", "error", "getfenv", "getmetatable", "setmetatable", "ipairs", "loadfile", "loadstring", "newproxy", "next", "pairs", "pcall", "spawn", "rawequal", "rawget", "rawset", "select", "tonumber", "tostring", "type", "unpack", "xpcall", "delay", "stats", ":Remove()", ":BreakJoints()", ":GetChildren()", ":FindFirstChild()", ":FireServer()", ":InvokeServer()", ":ClearAllChildren()", ":Clone()", ":Destroy()", ":FindFirstAncestor()", ":FindFirstAncestorOfClass()", ":FindFirstAncestorWhichIsA()", ":FindFirstChildOfClass()", ":FindFirstChildWhichIsA()", ":GetDebugId()", ":GetDescendants()", ":GetFullName()", ":IsA()", ":GetPropertyChangedSignal()", ":IsAncestorOf()", ":IsDescendantOf()", ":WaitForChild()", ":Connect()", ":AncestryChanged()", ":Changed()", ":ChildAdded()", ":ChildRemoved()", ":DescendantAdded()", ":DescendantRemoving()", ":GetService()", ":GetObjects()", ":HttpGet()", ":Wait()"])
+            AddIntellisense(Key, "Function", Key, Key.includes(":") ? Key.substring(1, Key.length) : Key);
+
+            for (const Key of ["Visible", "Color", "Transparency", "Thickness", "From", "To", "Text", "Size", "Center", "Outline", "OutlineColor", "Position", "TextBounds", "Font", "Data", "Rounding", "NumSides", "Radius", "Filled", "PointA", "PointB", "PointC", "PointD"])
+            AddIntellisense(Key, "Property", "Property for Drawing Library", Key);
+
+            }
+            load();
+            Refresh = function () {
+            var text = GetText();
+            SetText("");
+            editor.trigger('keyboard', 'type', {
+            text: text
+            });
+            }
+            });
+        </script>
+    </body>
+
+</html>
+    </script>
+<!-- ================= END ORIGINAL SCRIPT ================= -->
+
+<script>
+    // VISUAL-ONLY HOOKS (NO FUNCTION MODIFICATION)
+    window.addEventListener("load", () => {
+    if (window.editor) {
+    editor.getDomNode().addEventListener("contextmenu", e => {
+    e.preventDefault();
+    showContextMenu(e.clientX, e.clientY, [
+    {
+    label: "Clear All Text",
+    action: () => {
+    editor.setValue("");
+    if (window.currentTab) {
+    const t = tabs.find(x => x.id === currentTab);
+    if (t) {
+    t.content = "";
+    saveTabs();
+    }
+    }
+    }
+    }
+    ]);
+    });
+    }
+
+    document.getElementById("tabs-container").addEventListener("contextmenu", e => {
+    const tabEl = e.target.closest(".tab");
+    if (!tabEl) return;
+
+    e.preventDefault();
+    const tabId = tabEl.getAttribute("data-tab-id");
+    const tab = tabs.find(t => t.id === tabId);
+    if (!tab) return;
+
+    showContextMenu(e.clientX, e.clientY, [
+    {
+    label: "Rename Tab",
+    action: () => {
+    showRenamePopup(tab);
+    }
+    },
+    {
+    label: "Delete Tab",
+    action: () => {
+    if (tabs.length > 1) removeTab(tab.id);
+    }
+    }
+    ]);
+    });
+    });
+</script>
 </body>
 </html>
