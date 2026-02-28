@@ -4,129 +4,118 @@
     <meta charset="UTF-8">
     <style>
         :root {
-            --bg-dark: #0d0d0f;
-            --bg-lighter: #1a1a1e;
-            --tab-active: #252529;
-            --text-main: #efeff1;
-            --text-dim: #94949e;
-            --accent: #515ada;
+            --bg-body: #050505;
+            --bg-editor: #0a0a0a;
+            --tab-bg: #121212;
+            --tab-active: #1a1a1a;
+            --text-main: #ffffff;
+            --text-dim: #888888;
             --danger: #ff4d4d;
-            --border: rgba(255, 255, 255, 0.1);
+            --border: rgba(255, 255, 255, 0.05);
         }
 
         html, body {
             margin: 0; padding: 0; width: 100%; height: 100%;
-            overflow: hidden; background-color: var(--bg-dark);
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            overflow: hidden; background-color: var(--bg-body);
+            font-family: 'Segoe UI', Roboto, sans-serif;
         }
 
-        /* Полоса вкладок — стала чуть выше */
+        /* Полоса вкладок */
         #tabs-bar {
             display: flex;
-            background-color: var(--bg-dark); 
-            height: 48px; 
+            height: 60px; /* Сделал выше */
             align-items: center;
             padding: 0 15px;
-            gap: 8px;
-            border-bottom: 1px solid var(--border);
+            gap: 10px;
+            background-color: var(--bg-body);
         }
 
         #tabs-list {
             display: flex; 
-            gap: 8px;
+            gap: 10px;
         }
 
-        /* ТАБЫ — теперь «потолще» и солиднее */
+        /* Стиль парящей вкладки как на скрине */
         .tab {
             display: flex;
             align-items: center;
-            background-color: var(--bg-lighter);
+            background-color: var(--tab-bg);
             color: var(--text-dim);
-            padding: 0 16px;
-            height: 34px; /* Увеличенная высота */
-            min-width: 100px;
-            max-width: 180px;
-            font-size: 13px; 
-            font-weight: 500;
-            border-radius: 8px; 
+            padding: 0 14px;
+            height: 38px; /* Потолще */
+            min-width: 120px;
+            border-radius: 10px; /* Закругление */
             cursor: pointer;
             user-select: none;
-            transition: background-color 0.2s, color 0.2s, border-color 0.2s;
-            border: 1px solid transparent;
-            position: relative;
+            transition: all 0.2s ease;
+            border: 1px solid var(--border);
+        }
+
+        /* Иконка файла перед текстом */
+        .tab::before {
+            content: '📄'; /* Или SVG иконка */
+            font-size: 12px;
+            margin-right: 8px;
+            opacity: 0.7;
         }
 
         .tab:hover {
-            background-color: #202024;
+            background-color: #181818;
             color: var(--text-main);
         }
 
         .tab.active {
             background-color: var(--tab-active);
             color: #fff;
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
-
-        /* Убрана полоска снизу (::after удален) */
 
         .tab-name {
             flex-grow: 1;
-            outline: none;
+            font-size: 13px;
+            font-weight: 500;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
             margin-right: 10px;
         }
 
-        /* КНОПКА ЗАКРЫТИЯ — теперь просто краснеет */
+        /* Кнопка закрытия — только краснеет при наведении */
         .close-btn {
-            font-size: 18px;
+            font-size: 16px;
             color: var(--text-dim);
-            transition: color 0.2s; /* Плавная смена цвета */
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 20px;
-            height: 20px;
-            line-height: 1;
+            transition: color 0.15s ease;
+            padding: 2px;
         }
 
         .close-btn:hover {
-            color: var(--danger) !important; /* Цвет становится красным */
-            background: none; /* Убрал фон при наведении */
-            transform: none; /* Убрал анимацию движения */
+            color: var(--danger) !important;
         }
 
-        /* Кнопка добавить (+) */
+        /* Кнопка + */
         #add-tab-btn {
-            width: 32px;
-            height: 32px;
+            color: var(--text-dim);
+            font-size: 24px;
+            cursor: pointer;
+            margin-left: 5px;
+            transition: color 0.2s;
             display: flex;
             align-items: center;
             justify-content: center;
-            background-color: var(--bg-lighter);
-            color: var(--text-dim);
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 20px;
-            border: 1px solid var(--border);
-            transition: all 0.2s;
         }
 
         #add-tab-btn:hover {
-            background-color: var(--tab-active);
             color: white;
-            border-color: var(--accent);
         }
 
+        /* Редактор — темный, с отступами от краев */
         #editor-container {
-            width: calc(100% - 24px);
-            height: calc(100% - 72px);
-            margin: 12px;
+            width: calc(100% - 30px);
+            height: calc(100% - 75px);
+            margin: 0 15px 15px 15px;
             border-radius: 12px;
             overflow: hidden;
-            background-color: #08080a;
+            background-color: var(--bg-editor);
             border: 1px solid var(--border);
         }
     </style>
@@ -148,25 +137,32 @@
         require.config({ paths: { 'vs': 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.26.1/min/vs' } });
 
         require(['vs/editor/editor.main'], function () {
-            monaco.editor.defineTheme('trx-theme', {
+            monaco.editor.defineTheme('yub-theme', {
                 base: 'vs-dark',
                 inherit: true,
-                rules: [],
+                rules: [
+                    { token: 'string', foreground: 'e2b38b' },
+                    { token: 'keyword', foreground: '89ddff' }
+                ],
                 colors: {
-                    'editor.background': '#08080a',
-                    'editor.lineHighlightBackground': '#151518',
+                    'editor.background': '#0a0a0a',
+                    'editor.lineHighlightBackground': '#121212',
+                    'editorLineNumber.foreground': '#333',
+                    'editorLineNumber.activeForeground': '#666',
                 }
             });
 
             editor = monaco.editor.create(document.getElementById('editor-container'), {
-                value: '-- TRX Engine\nprint("Tabs improved")',
+                value: 'print(\'Im using YUB-X!\')',
                 language: 'lua',
-                theme: 'trx-theme',
+                theme: 'yub-theme',
                 automaticLayout: true,
-                fontSize: 14,
+                fontSize: 15,
                 minimap: { enabled: false },
-                cursorBlinking: "smooth",
-                scrollbar: { verticalScrollbarSize: 8, horizontalScrollbarSize: 8 }
+                padding: { top: 20 },
+                lineNumbersMinChars: 3,
+                scrollBeyondLastLine: false,
+                cursorBlinking: "smooth"
             });
 
             addNewTab();
@@ -175,8 +171,8 @@
         function addNewTab() {
             tabCounter++;
             const id = "tab_" + Date.now();
-            const name = "script" + tabCounter + ".lua";
-            tabs.push({ id: id, name: name, content: "-- " + name + "\n" });
+            const name = (tabCounter === 1) ? "Untitled Tab 1.lua" : "Untitled Tab " + tabCounter + ".lua";
+            tabs.push({ id: id, name: name, content: (tabCounter === 1) ? "print('Im using YUB-X!')" : "-- New script\n" });
             renderTabs();
             switchTab(id);
         }
@@ -196,25 +192,9 @@
         function closeTab(e, id) {
             e.stopPropagation();
             if (tabs.length === 1) return;
-            
             tabs = tabs.filter(t => t.id !== id);
-            if (activeTabId === id) {
-                switchTab(tabs[tabs.length - 1].id);
-            } else {
-                renderTabs();
-            }
-        }
-
-        function renameTab(id, element) {
-            element.contentEditable = true;
-            element.focus();
-            const save = () => {
-                element.contentEditable = false;
-                const tab = tabs.find(t => t.id === id);
-                if (tab) tab.name = element.innerText;
-            };
-            element.onkeydown = (e) => { if(e.key === "Enter") { e.preventDefault(); save(); } };
-            element.onblur = save;
+            if (activeTabId === id) switchTab(tabs[tabs.length - 1].id);
+            else renderTabs();
         }
 
         function renderTabs() {
@@ -225,7 +205,7 @@
                 div.className = `tab ${tab.id === activeTabId ? 'active' : ''}`;
                 div.onclick = () => switchTab(tab.id);
                 div.innerHTML = `
-                    <span class="tab-name" ondblclick="renameTab('${tab.id}', this)">${tab.name}</span>
+                    <span class="tab-name">${tab.name}</span>
                     <span class="close-btn" onclick="closeTab(event, '${tab.id}')">×</span>
                 `;
                 list.appendChild(div);
